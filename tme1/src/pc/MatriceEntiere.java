@@ -92,27 +92,82 @@ public class MatriceEntiere {
 	}
 	
 	/**
-	 * @param a
+	 * 
+	 * @param b une matrice
+	 * @return
+	 * @throws TaillesNonConcordantesException
+	 */
+	public MatriceEntiere ajoute(MatriceEntiere b) throws TaillesNonConcordantesException {
+		
+		// Si la taille des matrice ne concorde pas alors on lève une exception
+		if( (this.nbLignes() != b.nbLignes()) || (this.nbColonnes() != b.nbColonnes()) ) {
+			throw new TaillesNonConcordantesException("Les tailles des matrices sont inégales");
+		}
+		
+		// On instancie une nouvelle MatriceEntiere qui contiendra le résultat
+		MatriceEntiere res = new MatriceEntiere(this.nbLignes(), b.nbColonnes());
+		
+		// On procède à l'addition des deux matrices
+		for(int i = 0; i < res.nbLignes(); i++ ) {
+			for (int j = 0; j < res.nbColonnes() ; j++) {
+				int value = this.getElem(i, j) + b.getElem(i, j);
+				res.setElem(i, j, value);
+			} 
+		}
+		return res;
+	}
+	
+	/**
+	 * 
 	 * @param b
 	 * @return
 	 * @throws TaillesNonConcordantesException
 	 */
-	public static MatriceEntiere ajoute(MatriceEntiere a, MatriceEntiere b) throws TaillesNonConcordantesException {
+	public MatriceEntiere produit(MatriceEntiere b) throws TaillesNonConcordantesException {
 		
-		// Si la taille des matrice ne concorde pas alors on lève une exception
-		if( (a.nbLignes() != b.nbLignes()) || (a.nbColonnes() != b.nbColonnes()) ) {
-			throw new TaillesNonConcordantesException("Les tailles des matrices sont inégales");
+		if (this.nbColonnes() != b.nbLignes()) {
+			throw new TaillesNonConcordantesException("La taille de la colonne de la matrice n'est pas égale à la taille de la ligne de la seconde matrice");
 		}
 		
-		MatriceEntiere res = new MatriceEntiere(a.nbLignes(), b.nbColonnes());
-		for(int[] ligne : matrice) {
-			for (int i = 0; i < ligne.length; i++)
-				res.
+		MatriceEntiere res = new MatriceEntiere(this.nbLignes(), b.nbColonnes());
+		
+		for(int i = 0; i < res.nbLignes(); i++) {
+			for (int j = 0; j < res.nbColonnes(); j++) {
+				
+				// On somme a(i,k)*b(k,j)
+				int val = 0;
+				for (int k = 0; k < this.nbColonnes(); k++)
+					val += this.getElem(i, k) * b.getElem(k, j);
+				
+				// On insere la nouvelle valeur dans la case approprié
+				res.setElem(i, j, val);
+			}
 		}
+		return res;
+	}
 	
-			
+	public MatriceEntiere transposee() {
 		
+		// On intervertie les colonnes et les lignes de la matrice initiale dans la nouvelle matrice
+		MatriceEntiere res = new MatriceEntiere(this.nbColonnes(), this.nbLignes());
 		
+		//On copie le contenue a(i,j) dans b(j,i)
+		for (int i = 0; i < this.nbLignes(); i++)
+			for (int j = 0; j < this.nbColonnes(); j++)
+				res.setElem(j, i, this.getElem(i, j));
+		
+		return res;
+	}
+	
+	public MatriceEntiere produitParScalaire(int scalaire) {
+		
+		// Instanciation de la matrice résultante
+		MatriceEntiere res = new MatriceEntiere(this.nbLignes(), this.nbColonnes());  
+		
+		// On multiplie chacune des cases de la matrice par un scalaire
+		for (int i = 0; i < this.nbLignes(); i++)
+			for (int j = 0; j < this.nbColonnes(); j++)
+				res.setElem(i, j, this.getElem(i, j) * scalaire);
 		
 		return res;
 	}
@@ -120,11 +175,15 @@ public class MatriceEntiere {
 	@Override
 	public String toString() {
 		String dimension = "" + this.nbLignes() + "\n" + this.nbColonnes();
-		String matrice = "\n" + dimension;
-		for (int[] i : this.matrice)
+		String matrice = dimension;
+		
+		for (int[] i : this.matrice) {
+			matrice += "\n";
+			
 			for(int j : i)
 				matrice += j + " ";
-		return matrice; 
+		}
+		return matrice; 	
 	}
 
 	@Override
@@ -136,6 +195,13 @@ public class MatriceEntiere {
 		MatriceEntiere other = (MatriceEntiere) obj;
 		return Arrays.deepEquals(this.matrice, other.matrice);
 	}
+
+	
+	public char[] toTest() {
+		return "leader";
+	}
+
+	
 	
 	
 	
