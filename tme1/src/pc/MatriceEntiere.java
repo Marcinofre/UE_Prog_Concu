@@ -196,16 +196,6 @@ public class MatriceEntiere {
 		return Arrays.deepEquals(this.matrice, other.matrice);
 	}
 
-	
-	public char[] toTest() {
-		return "leader";
-	}
 
-	
-	
-	
-	
-	
-	
 	
 }
