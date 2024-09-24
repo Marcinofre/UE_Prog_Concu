@@ -1,10 +1,14 @@
 package matrice;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import pc.countwords.WordCount;
 
@@ -184,38 +188,42 @@ public class MatriceEntiere {
 		MatriceEntiere res = new MatriceEntiere(this.nbLignes(), this.nbColonnes());
 		MatriceEntiere mat = this;
 		
-		int ligne = mat.nbLignes();
+		int line = mat.nbLignes();
 		int columns = mat.nbColonnes();
 		
 		
 		// On multiplie chacune des cases de la matrice par un scalaire
-		if (ligne <= columns)
-			for (int i = 0; i < ligne; i++) {
-					int lig = i;
+			if (line < columns) {
+				for (int i = 0; i < line; i++) {
+						final int lig = i;
+						Thread the = new Thread(
+								new Runnable() {
+									@Override
+									public void run() {
+										for (int col = 0; col < columns; col++)
+											res.setElem(lig, col, mat.getElem(lig, col) * scalaire);
+									}
+								}
+							);	
+					the.start();
+				}
+			} else {
+				for (int j = 0; j < columns; j++) {
+					final int col = j;
 					Thread the = new Thread(
 							new Runnable() {
 								@Override
 								public void run() {
-									for (int col = 0; col < columns; col++)
+									for (int lig = 0; lig < line; lig++) {
 										res.setElem(lig, col, mat.getElem(lig, col) * scalaire);
+									}
 								}
-							});	
-				the.start();
-			}
-		else {
-			for (int i = 0; i < columns; i++) {
-				int col = i;
-				Thread the = new Thread(
-						new Runnable() {
-							@Override
-							public void run() {
-								for (int lig = 0; lig < ligne; lig++)
-									res.setElem(lig, col, mat.getElem(lig, col) * scalaire);
 							}
-						});	
-				the.start();
-			}	
-		}
+						);
+					the.start();
+				}
+			}
+			
 		return res;
 	}
 	
@@ -250,11 +258,17 @@ public class MatriceEntiere {
 		//124 par 124
 		int range = 101;
 		int min = 0;
-		int line = Integer.parseInt(args[1]);
-		int colomn = Integer.parseInt(args[2]);;
+		int line = Integer.parseInt(args[0]);
+		int colomn = Integer.parseInt(args[1]);
 		
 		StringBuilder strBufMat = new StringBuilder(line + "\n" + colomn+ "\n");
 		for (int i = 0; i < line; i++) {
+			
+			
+			
+			
+			
+			
 			for (int j = 0; j < colomn; j++) {
 				int rand = (int)(Math.random() * range) + min;
 				strBufMat.append( rand + " ");
@@ -270,7 +284,9 @@ public class MatriceEntiere {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
+           
         }
+		
 		
 		
 		try {
@@ -282,7 +298,7 @@ public class MatriceEntiere {
 			long startTime = System.currentTimeMillis();
 			
 			// Faire le test de la fonction --ici-- 
-			MatriceEntiere res1 = mat.produitParScalaire(2);
+			MatriceEntiere res1 = mat.produitParScalaire(5);
 			
 			// Fin du timer
 			System.out.println("Total time for res1 "+(System.currentTimeMillis()-startTime) + " ms");
@@ -297,7 +313,7 @@ public class MatriceEntiere {
 			
 			// Faire le test de la fonction --ici-- 
 			
-			MatriceEntiere res2 = mat.produitParScalaireMT(2);
+			MatriceEntiere res2 = mat.produitParScalaireMT(5);
 			
 			// Fin du timer
 			System.out.println("Total time for res2 " + (System.currentTimeMillis()-startTime2) + " ms");
