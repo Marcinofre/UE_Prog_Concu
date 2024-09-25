@@ -263,12 +263,7 @@ public class MatriceEntiere {
 		
 		StringBuilder strBufMat = new StringBuilder(line + "\n" + colomn+ "\n");
 		for (int i = 0; i < line; i++) {
-			
-			
-			
-			
-			
-			
+
 			for (int j = 0; j < colomn; j++) {
 				int rand = (int)(Math.random() * range) + min;
 				strBufMat.append( rand + " ");
